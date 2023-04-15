@@ -24,8 +24,20 @@ const validateSchema = async (data) => {
 const createNew = async (data) => {
     try {
         const value = await validateSchema(data)
-        const result = await getDB().collection(userCollectionName).insertOne(value)
-        return result
+        const dataFind = await getDB().collection(userCollectionName).aggregate([
+            {
+                $match: {
+                    email: value.email,
+                    _destroy: false
+                }
+            }
+        ]).toArray()
+        if (dataFind.length > 0) {
+            return { message: 'Email đã tồn tại' }
+        } else {
+            const result = await getDB().collection(userCollectionName).insertOne(value)
+            return result
+        }
     } catch (error) {
         throw new Error(error)
     }

@@ -26,7 +26,7 @@ router.route('/:email/:password')
     .get(userController.getFullUser)
 
 router.route('/:id')
-    .get(auth, userController.getFullUserInformation)
-    .put(auth, UserValidation.update, userController.update)
+    .get(userController.getFullUserInformation)
+    .put(UserValidation.update, userController.update)
 
 export const userRoutes = router

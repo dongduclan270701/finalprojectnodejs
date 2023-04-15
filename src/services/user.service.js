@@ -4,8 +4,13 @@ import { cloneDeep } from 'lodash'
 const createNew = async (data) => {
     try {
         const newUser = await UserModel.createNew(data)
-        const getNewCard = await UserModel.findOneById(newUser.insertedId.toString())
-        return getNewCard
+        if (newUser.message === 'Email đã tồn tại') {
+            return newUser
+        }
+        else {
+            const getNewCard = await UserModel.findOneById(newUser.insertedId.toString())
+            return getNewCard
+        }
     } catch (error) {
         throw new Error(error)
     }
