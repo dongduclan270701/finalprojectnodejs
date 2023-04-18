@@ -1,6 +1,8 @@
 import express from 'express'
 import { HttpStatusCode } from '*/utils/constants'
 import { userRoutes } from './user.route'
+import { collectingRoutes } from './collecting.route'
+import { laptopCollectingRoutes } from './laptopCollecting.route'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
@@ -27,4 +29,8 @@ router.get('/status', (req, res) => res.status(HttpStatusCode.OK).json({
 
 //User APIs
 router.use('/users', userRoutes)
+
+router.use('/collecting', collectingRoutes)
+
+router.use('/laptopCollecting', laptopCollectingRoutes)
 export const apiV1 = router
