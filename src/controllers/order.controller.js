@@ -1,4 +1,4 @@
-import { laptopCollectingService } from '*/services/laptopCollecting.service'
+import { orderService } from '*/services/order.service'
 import { HttpStatusCode } from '*/utils/constants'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
@@ -9,7 +9,7 @@ const createNew = async (req, res) => {
         // const salt = await bcrypt.genSalt(10)
         // const hashedPassword = await bcrypt.hash(data.password, salt)
         // const newData = { ...data, password: hashedPassword }
-        const result = await laptopCollectingService.createNew(data)
+        const result = await orderService.createNew(data)
         // if (result.message === 'Email đã tồn tại') {
         //     res.status(HttpStatusCode.OK).json('Email đã tồn tại')
         // }
@@ -26,11 +26,11 @@ const createNew = async (req, res) => {
     }
 }
 
-const getFullLaptopCollecting = async (req, res) => {
+const getFullorder = async (req, res) => {
 
     try {
         const data = req.query
-        const result = await laptopCollectingService.getFullLaptopCollecting(data)
+        const result = await orderService.getFullorder(data)
         
         res.status(HttpStatusCode.OK).json(result)
 
@@ -44,7 +44,7 @@ const getFullLaptopCollecting = async (req, res) => {
 const getFullLaptopInformation = async (req, res) => {
     try {
         const { id } = req.params
-        const result = await laptopCollectingService.getFullLaptopInformation(id)
+        const result = await orderService.getFullLaptopInformation(id)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -56,7 +56,7 @@ const getFullLaptopInformation = async (req, res) => {
 const getSearchLaptopInformation = async (req, res) => {
     try {
         const data = req.query
-        const result = await laptopCollectingService.getSearchLaptopInformation(data)
+        const result = await orderService.getSearchLaptopInformation(data)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -68,7 +68,7 @@ const getSearchLaptopInformation = async (req, res) => {
 const update = async (req, res) => {
     try {
         const { src } = req.params
-        const result = await laptopCollectingService.update(src, req.body)
+        const result = await orderService.update(src, req.body)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -77,4 +77,4 @@ const update = async (req, res) => {
     }
 }
 
-export const laptopCollectingController = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullLaptopCollecting, update }
+export const orderController = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullorder, update }

@@ -1,16 +1,16 @@
-import { laptopCollectingModel } from '*/models/laptopCollecting.model'
+import { orderModel } from '*/models/order.model'
 import { cloneDeep } from 'lodash'
 
 const createNew = async (data) => {
     try {
-        const newUser = await laptopCollectingModel.createNew(data)
-        const getNewCard = await laptopCollectingModel.findOneById(newUser.insertedId.toString())
+        const newUser = await orderModel.createNew(data)
+        const getNewCard = await orderModel.findOneById(newUser.insertedId.toString())
         return getNewCard
         // if (newUser.message === 'Email đã tồn tại') {
         //     return newUser
         // }
         // else {
-        //     const getNewCard = await laptopCollectingModel.findOneById(newUser.insertedId.toString())
+        //     const getNewCard = await orderModel.findOneById(newUser.insertedId.toString())
         //     return getNewCard
         // }
     } catch (error) {
@@ -18,11 +18,11 @@ const createNew = async (data) => {
     }
 }
 
-const getFullLaptopCollecting = async (data) => {
+const getFullorder = async (data) => {
     try {
-        const laptopCollecting = await laptopCollectingModel.getFullLaptopCollecting(data)
+        const order = await orderModel.getFullorder(data)
 
-        const transfromUser = cloneDeep(laptopCollecting)
+        const transfromUser = cloneDeep(order)
 
         return transfromUser
     } catch (error) {
@@ -32,9 +32,9 @@ const getFullLaptopCollecting = async (data) => {
 
 const getSearchLaptopInformation = async (data) => {
     try {
-        const laptopCollecting = await laptopCollectingModel.getSearchLaptopInformation(data)
+        const order = await orderModel.getSearchLaptopInformation(data)
 
-        const transfromUser = cloneDeep(laptopCollecting)
+        const transfromUser = cloneDeep(order)
 
         return transfromUser
     } catch (error) {
@@ -44,7 +44,7 @@ const getSearchLaptopInformation = async (data) => {
 
 const getFullLaptopInformation = async (userId) => {
     try {
-        const user = await laptopCollectingModel.getFullLaptopInformation(userId)
+        const user = await orderModel.getFullLaptopInformation(userId)
         if (!user) {
             throw new Error('not Found')
         }
@@ -63,11 +63,11 @@ const update = async (src, data) => {
             ...data,
             updateAt: Date.now()
         }
-        const updatedUser = await laptopCollectingModel.update(src, updateData)
+        const updatedUser = await orderModel.update(src, updateData)
         return updatedUser
     } catch (error) {
         throw new Error(error)
     }
 }
 
-export const laptopCollectingService = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullLaptopCollecting, update }
+export const orderService = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullorder, update }

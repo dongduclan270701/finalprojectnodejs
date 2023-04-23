@@ -20,10 +20,17 @@ const auth = (req, res, next) => {
 const router = express.Router()
 
 router.route('/')
-    .post(auth, laptopCollectingValidation.createNew, laptopCollectingController.createNew)
+    .get((req, res) => laptopCollectingController.getFullLaptopCollecting(req, res))
+    .post(laptopCollectingValidation.createNew, laptopCollectingController.createNew)
+
+router.route('/search')
+    .get((req, res) => laptopCollectingController.getSearchLaptopInformation(req, res))
+
 
 router.route('/:id')
     .get(laptopCollectingController.getFullLaptopInformation)
-    .put(auth, laptopCollectingValidation.update, laptopCollectingController.update)
+
+router.route('/:src')
+    .put(laptopCollectingValidation.update, laptopCollectingController.update)
 
 export const laptopCollectingRoutes = router

@@ -3,6 +3,7 @@ import { HttpStatusCode } from '*/utils/constants'
 import { userRoutes } from './user.route'
 import { collectingRoutes } from './collecting.route'
 import { laptopCollectingRoutes } from './laptopCollecting.route'
+import { orderRoutes } from './order.route'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
@@ -33,4 +34,6 @@ router.use('/users', userRoutes)
 router.use('/collecting', collectingRoutes)
 
 router.use('/laptopCollecting', laptopCollectingRoutes)
+
+router.use('/order', orderRoutes)
 export const apiV1 = router

@@ -3,7 +3,7 @@ import { getDB } from '*/config/mongodb.js'
 import { ObjectId } from 'mongodb'
 
 // Define Board collection
-const laptopCollectionName = 'laptop'
+const laptopCollectionName = 'order'
 const laptopCollectionSchema = Joi.object({
     img: Joi.array().items(Joi.string()).required(),
     src: Joi.string().required(),
@@ -77,7 +77,7 @@ const update = async (src, data) => {
 }
 
 
-const getFullLaptopCollecting = async (data) => {
+const getFullorder = async (data) => {
     try {
         let perPage = 10
         let page = parseInt(data.count)
@@ -184,4 +184,4 @@ const getSearchLaptopInformation = async (data) => {
         throw new Error(error)
     }
 }
-export const laptopCollectingModel = { createNew, getFullLaptopInformation, getFullLaptopCollecting, update, findOneById, getSearchLaptopInformation }
+export const orderModel = { createNew, getFullLaptopInformation, getFullorder, update, findOneById, getSearchLaptopInformation }
