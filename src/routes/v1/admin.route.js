@@ -1,6 +1,6 @@
 import express from 'express'
-import { userController } from '*/controllers/user.controller'
-import { UserValidation } from '*/validations/user.validation'
+import { adminController } from '*/controllers/admin.controller'
+import { AdminValidation } from '*/validations/admin.validation'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
@@ -20,13 +20,13 @@ const auth = (req, res, next) => {
 const router = express.Router()
 
 router.route('/')
-    .post( UserValidation.createNew, userController.createNew)
+    .post( AdminValidation.createNew, adminController.createNew)
 
 router.route('/:email/:password')
-    .get(userController.getFullUser)
+    .get(adminController.getFullUser)
 
 router.route('/:id')
-    .get(userController.getFullUserInformation)
-    .put(UserValidation.update, userController.update)
+    .get(adminController.getFullUserInformation)
+    .put(AdminValidation.update, adminController.update)
 
-export const userRoutes = router
+export const adminRoutes = router

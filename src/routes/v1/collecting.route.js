@@ -4,7 +4,7 @@ import { laptopCollectingValidation } from '*/validations/user.validation'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
-    const token = req.header('auth-token')
+    const token = req.header('auth-token-user')
     if (!token) {
         return res.status(401).send('Access Denied')
     }

@@ -4,7 +4,7 @@ import { orderValidation } from '*/validations/order.validation'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
-    const token = req.header('auth-token')
+    const token = req.header('auth-token-user')
     if (!token) {
         return res.status(401).send('Access Denied')
     }
@@ -24,13 +24,12 @@ router.route('/')
     .post(orderValidation.createNew, orderController.createNew)
 
 router.route('/search')
-    .get((req, res) => orderController.getSearchLaptopInformation(req, res))
-
+    .get((req, res) => orderController.getSearchOrder(req, res))
 
 router.route('/:id')
-    .get(orderController.getFullLaptopInformation)
+    .get(orderController.getFullOrderInformation)
 
-router.route('/:src')
+router.route('/:id')
     .put(orderValidation.update, orderController.update)
 
 export const orderRoutes = router

@@ -3,16 +3,11 @@ import { cloneDeep } from 'lodash'
 
 const createNew = async (data) => {
     try {
-        const newUser = await orderModel.createNew(data)
-        const getNewCard = await orderModel.findOneById(newUser.insertedId.toString())
-        return getNewCard
-        // if (newUser.message === 'Email đã tồn tại') {
-        //     return newUser
-        // }
-        // else {
-        //     const getNewCard = await orderModel.findOneById(newUser.insertedId.toString())
-        //     return getNewCard
-        // }
+        const newOrder = await orderModel.createNew(data)
+        await orderModel.findUserAndUpdateOrderList(data.email, newOrder.insertedId.toString())
+        const getNewOrder = await orderModel.findOneById(newOrder.insertedId.toString())
+        
+        return getNewOrder
     } catch (error) {
         throw new Error(error)
     }
@@ -21,6 +16,16 @@ const createNew = async (data) => {
 const getFullorder = async (data) => {
     try {
         const order = await orderModel.getFullorder(data)
+        const transfromUser = cloneDeep(order)
+        return transfromUser
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const getSearchOrder = async (data) => {
+    try {
+        const order = await orderModel.getSearchOrder(data)
 
         const transfromUser = cloneDeep(order)
 
@@ -30,21 +35,9 @@ const getFullorder = async (data) => {
     }
 }
 
-const getSearchLaptopInformation = async (data) => {
+const getFullOrderInformation = async (orderId) => {
     try {
-        const order = await orderModel.getSearchLaptopInformation(data)
-
-        const transfromUser = cloneDeep(order)
-
-        return transfromUser
-    } catch (error) {
-        throw new Error(error)
-    }
-}
-
-const getFullLaptopInformation = async (userId) => {
-    try {
-        const user = await orderModel.getFullLaptopInformation(userId)
+        const user = await orderModel.getFullOrderInformation(orderId)
         if (!user) {
             throw new Error('not Found')
         }
@@ -70,4 +63,4 @@ const update = async (src, data) => {
     }
 }
 
-export const orderService = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullorder, update }
+export const orderService = { createNew, getSearchOrder, getFullOrderInformation, getFullorder, update }

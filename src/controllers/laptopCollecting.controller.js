@@ -52,6 +52,17 @@ const getFullLaptopInformation = async (req, res) => {
         })
     }
 }
+const getFullLaptopInformationAdmin = async (req, res) => {
+    try {
+        const { id } = req.params
+        const result = await laptopCollectingService.getFullLaptopInformationAdmin(id)
+        res.status(HttpStatusCode.OK).json(result)
+    } catch (error) {
+        res.status(HttpStatusCode.INTERNAL_SERVER).json({
+            error: error.message
+        })
+    }
+}
 
 const getSearchLaptopInformation = async (req, res) => {
     try {
@@ -77,4 +88,4 @@ const update = async (req, res) => {
     }
 }
 
-export const laptopCollectingController = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullLaptopCollecting, update }
+export const laptopCollectingController = { createNew, getSearchLaptopInformation, getFullLaptopInformationAdmin, getFullLaptopInformation, getFullLaptopCollecting, update }

@@ -4,10 +4,11 @@ import { userRoutes } from './user.route'
 import { collectingRoutes } from './collecting.route'
 import { laptopCollectingRoutes } from './laptopCollecting.route'
 import { orderRoutes } from './order.route'
+import { adminRoutes } from './admin.route'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
-    const token = req.header('auth-token')
+    const token = req.header('auth-token-user')
     if (!token) {
         return res.status(401).send('Access Denied')
     }
@@ -30,6 +31,8 @@ router.get('/status', (req, res) => res.status(HttpStatusCode.OK).json({
 
 //User APIs
 router.use('/users', userRoutes)
+
+router.use('/admin', adminRoutes)
 
 router.use('/collecting', collectingRoutes)
 

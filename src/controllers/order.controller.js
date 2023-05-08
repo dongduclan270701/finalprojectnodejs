@@ -6,19 +6,8 @@ import jwt from 'jsonwebtoken'
 const createNew = async (req, res) => {
     try {
         const data = req.body
-        // const salt = await bcrypt.genSalt(10)
-        // const hashedPassword = await bcrypt.hash(data.password, salt)
-        // const newData = { ...data, password: hashedPassword }
         const result = await orderService.createNew(data)
-        // if (result.message === 'Email đã tồn tại') {
-        //     res.status(HttpStatusCode.OK).json('Email đã tồn tại')
-        // }
-        // else {
-        // const token = jwt.sign({ _id: result._id }, process.env.TOKEN_SECRET)
-        // res.header('auth-token', token).send(token)
-        // res.status(HttpStatusCode.OK).json({ token: token, username: result.username })
         res.status(HttpStatusCode.OK).json(result)
-        // }
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
             error: error.message
@@ -41,10 +30,10 @@ const getFullorder = async (req, res) => {
     }
 }
 
-const getFullLaptopInformation = async (req, res) => {
+const getFullOrderInformation = async (req, res) => {
     try {
         const { id } = req.params
-        const result = await orderService.getFullLaptopInformation(id)
+        const result = await orderService.getFullOrderInformation(id)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -53,10 +42,10 @@ const getFullLaptopInformation = async (req, res) => {
     }
 }
 
-const getSearchLaptopInformation = async (req, res) => {
+const getSearchOrder = async (req, res) => {
     try {
         const data = req.query
-        const result = await orderService.getSearchLaptopInformation(data)
+        const result = await orderService.getSearchOrder(data)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -67,8 +56,8 @@ const getSearchLaptopInformation = async (req, res) => {
 
 const update = async (req, res) => {
     try {
-        const { src } = req.params
-        const result = await orderService.update(src, req.body)
+        const { id } = req.params
+        const result = await orderService.update(id, req.body)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -77,4 +66,4 @@ const update = async (req, res) => {
     }
 }
 
-export const orderController = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullorder, update }
+export const orderController = { createNew, getSearchOrder, getFullOrderInformation, getFullorder, update }

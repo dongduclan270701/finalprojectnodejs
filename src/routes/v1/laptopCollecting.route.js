@@ -3,13 +3,28 @@ import { laptopCollectingController } from '*/controllers/laptopCollecting.contr
 import { laptopCollectingValidation } from '*/validations/laptopCollecting.validation'
 import jwt from 'jsonwebtoken'
 
-const auth = (req, res, next) => {
-    const token = req.header('auth-token')
+const authCustomer = (req, res, next) => {
+    const token = req.header('auth-token-user')
     if (!token) {
+
         return res.status(401).send('Access Denied')
     }
     try {
-        const verified = jwt.verify(token, process.env.TOKEN_SECRET)
+        const verified = jwt.verify(token, process.env.TOKEN_SECRET_CUSTOMER)
+        req.result = verified
+        next()
+    } catch (error) {
+        res.status(500).send('Invalid token')
+    }
+}
+const authAdmin = (req, res, next) => {
+    const token = req.header('auth-token-admin')
+    if (!token) {
+
+        return res.status(401).send('Access Denied')
+    }
+    try {
+        const verified = jwt.verify(token, process.env.TOKEN_SECRET_ADMIN)
         req.result = verified
         next()
     } catch (error) {
@@ -26,9 +41,11 @@ router.route('/')
 router.route('/search')
     .get((req, res) => laptopCollectingController.getSearchLaptopInformation(req, res))
 
-
 router.route('/:id')
     .get(laptopCollectingController.getFullLaptopInformation)
+
+router.route('/secretAdmin/:id')
+    .get(authAdmin, laptopCollectingController.getFullLaptopInformationAdmin)
 
 router.route('/:src')
     .put(laptopCollectingValidation.update, laptopCollectingController.update)

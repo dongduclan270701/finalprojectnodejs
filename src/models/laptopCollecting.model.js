@@ -19,6 +19,7 @@ const laptopCollectionSchema = Joi.object({
     description_table: Joi.array().required().items(Joi.array().ordered(Joi.string(), Joi.string())),
     description: Joi.array().required().items(Joi.array().ordered(Joi.string(), Joi.string())),
     category: Joi.array().required().items(Joi.string()),
+    collection: Joi.string().default(laptopCollectionName),
     createAt: Joi.date().timestamp().default(Date.now()),
     updateAt: Joi.date().timestamp().default(null),
     _destroy: Joi.boolean().default(false)
@@ -90,6 +91,27 @@ const getFullLaptopCollecting = async (data) => {
 }
 
 const getFullLaptopInformation = async (src) => {
+    try {
+        await getDB().collection(laptopCollectionName).findOneAndUpdate(
+            { src: src },
+            { $inc: { view: 1 } },
+            { returnDocument: 'after' }
+        )
+        const result = await getDB().collection(laptopCollectionName).aggregate([
+            {
+                $match: {
+                    src: src,
+                    _destroy: false
+                }
+            }
+        ]).toArray()
+        return result[0] || { message: 'Not found user' }
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const getFullLaptopInformationAdmin = async (src) => {
     try {
         const result = await getDB().collection(laptopCollectionName).aggregate([
             {
@@ -184,4 +206,12 @@ const getSearchLaptopInformation = async (data) => {
         throw new Error(error)
     }
 }
-export const laptopCollectingModel = { createNew, getFullLaptopInformation, getFullLaptopCollecting, update, findOneById, getSearchLaptopInformation }
+export const laptopCollectingModel = { 
+    createNew, 
+    getFullLaptopInformation, 
+    getFullLaptopInformationAdmin, 
+    getFullLaptopCollecting, 
+    update, 
+    findOneById, 
+    getSearchLaptopInformation 
+}

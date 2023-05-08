@@ -1,50 +1,57 @@
 import Joi from 'joi'
 import { getDB } from '*/config/mongodb.js'
 import { ObjectId } from 'mongodb'
+import crypto from 'crypto'
 
 // Define Board collection
-const laptopCollectionName = 'order'
-const laptopCollectionSchema = Joi.object({
-    img: Joi.array().items(Joi.string()).required(),
-    src: Joi.string().required(),
-    gift: Joi.array().required().items(Joi.string()),
-    gift_buy: Joi.array().required().items(Joi.string()),
-    percent: Joi.number().min(0).max(100).required(),
-    quantity: Joi.number().integer().min(0).required(),
-    sold: Joi.number().integer().min(0).default(0),
-    view: Joi.number().integer().min(0).default(0),
-    nameProduct: Joi.string().required().required(),
-    realPrice: Joi.number().min(0).required(),
-    nowPrice: Joi.number().min(0).required(),
-    description_table: Joi.array().required().items(Joi.array().ordered(Joi.string(), Joi.string())),
-    description: Joi.array().required().items(Joi.array().ordered(Joi.string(), Joi.string())),
-    category: Joi.array().required().items(Joi.string()),
+const orderName = 'order'
+const orderSchema = Joi.object({
+    product: Joi.array().required().items(Joi.object()),
+    email: Joi.string().required(),
+    username: Joi.string().required(),
+    phoneNumber: Joi.string().required(),
+    address: Joi.string().required(),
+    city: Joi.string().required(),
+    district: Joi.string().required(),
+    commune: Joi.string().required(),
+    discountCode: Joi.array().items(Joi.string()),
+    shipping_process: Joi.array().required().items(Joi.object({
+        time: Joi.string().required(),
+        date: Joi.string().required(),
+        content: Joi.string().required()
+    })),
+    method_payment: Joi.string().required(),
+    ship: Joi.number().required(),
+    sumOrder: Joi.number().required(),
+    status: Joi.string(),
     createAt: Joi.date().timestamp().default(Date.now()),
     updateAt: Joi.date().timestamp().default(null),
-    _destroy: Joi.boolean().default(false)
+    _destroy: Joi.boolean().default(false),
+    orderId: Joi.string()
 })
 
 const validateSchema = async (data) => {
-    return await laptopCollectionSchema.validateAsync(data, { abortEarly: false }) // Hiển thị đầy đủ lỗi nếu trong trường data có 2 field trở lên bị lỗi
+    return await orderSchema.validateAsync(data, { abortEarly: false }) // Hiển thị đầy đủ lỗi nếu trong trường data có 2 field trở lên bị lỗi
 }
 
 const createNew = async (data) => {
     try {
-        const value = await validateSchema(data)
-        // const dataFind = await getDB().collection(laptopCollectionName).aggregate([
-        //     {
-        //         $match: {
-        //             email: value.email,
-        //             _destroy: false
-        //         }
-        //     }
-        // ]).toArray()
-        // if (dataFind.length > 0) {
-        //     return { message: 'Email đã tồn tại' }
-        // } else {
-        const result = await getDB().collection(laptopCollectionName).insertOne(value)
+        // console.log(data)
+        const id = crypto.randomBytes(12).toString('hex')
+        const newData = { ...data, orderId: id }
+        console.log(id)
+        data.product.map(async (item, index) => {
+            const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
+                { src: item.src },
+                { $inc: { sold: item.quantity } },
+                { returnDocument: 'after' }
+            )
+            return updateProduct
+        })
+
+        const value = await validateSchema(newData)
+        const result = await getDB().collection(orderName).insertOne(value)
         return result
-        // }
     } catch (error) {
         throw new Error(error)
     }
@@ -52,24 +59,41 @@ const createNew = async (data) => {
 
 const findOneById = async (id) => {
     try {
-        const result = await getDB().collection(laptopCollectionName).findOne({ _id: ObjectId(id) })
+        const result = await getDB().collection(orderName).findOne({ _id: ObjectId(id) })
         return result
     } catch (error) {
         throw new Error(error)
     }
 }
 
-const update = async (src, data) => {
+const findUserAndUpdateOrderList = async (email, id) => {
     try {
-        const updateData = {
-            ...data
-        }
-        const srcGet = src
-        const updateUser = await getDB().collection(laptopCollectionName).findOneAndUpdate(
-            { src: srcGet },
-            { $set: updateData },
+        const updateUser = await getDB().collection('users').findOneAndUpdate(
+            { email: email },
+            { $push: { orders: id } },
             { returnDocument: 'after' }
         )
+        return updateUser.value
+    }
+    catch (error) {
+        throw new Error(error)
+    }
+}
+
+const update = async (id, data) => {
+    try {
+        const updateData = {
+            ...data,
+            updateAt: Date.now()
+        }
+        const { _id, ...newUpdateData } = updateData
+        console.log(newUpdateData)
+        const updateUser = await getDB().collection(orderName).findOneAndUpdate(
+            { _id: ObjectId(id) },
+            { $set: newUpdateData },
+            { returnDocument: 'after' }
+        )
+
         return updateUser.value
     } catch (error) {
         throw new Error(error)
@@ -81,107 +105,74 @@ const getFullorder = async (data) => {
     try {
         let perPage = 10
         let page = parseInt(data.count)
-        const result = await getDB().collection(laptopCollectionName).find().limit(perPage).skip((perPage * page) - perPage).toArray()
-        const resultTotal = await getDB().collection(laptopCollectionName).find().toArray()
+        const result = await getDB().collection(orderName).find().limit(perPage).skip((perPage * page) - perPage).toArray()
+        const resultTotal = await getDB().collection(orderName).find().toArray()
         return { data: [...result], total: resultTotal.length }
     } catch (error) {
         throw new Error(error)
     }
 }
 
-const getFullLaptopInformation = async (src) => {
+const getFullOrderInformation = async (id) => {
     try {
-        const result = await getDB().collection(laptopCollectionName).aggregate([
+        const result = await getDB().collection(orderName).aggregate([
             {
                 $match: {
-                    src: src,
+                    _id: ObjectId(id),
                     _destroy: false
                 }
             }
         ]).toArray()
-        return result[0] || { message: 'Not found user' }
+        return result[0] || { message: 'Not found order' }
     } catch (error) {
         throw new Error(error)
     }
 }
 
-const getSearchLaptopInformation = async (data) => {
+const getSearchOrder = async (data) => {
     try {
         let perPage = 10
         let page = parseInt(data.count)
-        
-        if (!data.category) {
-            const result = await getDB().collection(laptopCollectionName).aggregate([
-                {
-                    $match: {
-                        nameProduct: { $regex: new RegExp(`${data.nameProduct}`) },
-                        _destroy: false
-                    }
+        const result = await getDB().collection(orderName).aggregate([
+            {
+                $match: {
+                    status: { $regex: new RegExp(`${data.status === 'Chọn trạng thái' ? '' : data.status}`) },
+                    'shipping_process': {
+                        $elemMatch: {
+                            date: {
+                                $gte: data.firstDate,
+                                $lte: data.endDate
+                            },
+                            content: 'Đã đặt đơn hàng'
+                        }
+                    },
+                    orderId: { $regex: new RegExp(`${data.orderId}`) },
+                    _destroy: false
                 }
-            ]).skip((perPage * page) - perPage).limit(perPage).toArray()
-            const resultTotal = await getDB().collection(laptopCollectionName).aggregate([
-                {
-                    $match: {
-                        nameProduct: { $regex: new RegExp(`${data.nameProduct}`) },
-                        _destroy: false
-                    }
+            }
+        ]).skip((perPage * page) - perPage).limit(perPage).toArray()
+        const resultTotal = await getDB().collection(orderName).aggregate([
+            {
+                $match: {
+                    status: data.status,
+                    'shipping_process': {
+                        $elemMatch: {
+                            date: {
+                                $gte: data.firstDate,
+                                $lte: data.endDate
+                            },
+                            content: 'Đã đặt đơn hàng'
+                        }
+                    },
+                    orderId: { $regex: new RegExp(`${data.orderId}`) },
+                    _destroy: false
                 }
-            ]).toArray()
-            console.log({ data: [...result], total: resultTotal.length })
-            return { data: [...result], total: resultTotal.length }
-        } else {
-            let newCategory = data.category.filter(category => category !== 'Chọn loại' && category !== 'Chọn loại CPU' && category !== 'Chọn mức giá')
-
-            let newData
-            if (newCategory[0] === 'Chọn danh mục') {
-                newData = { ...data, category: [] }
-            } else {
-                newData = { ...data, category: newCategory }
             }
-            if (newData.category.length > 0) {
-                const result = await getDB().collection(laptopCollectionName).aggregate([
-                    {
-                        $match: {
-                            nameProduct: { $regex: new RegExp(`${newData.nameProduct}`) },
-                            category: { $all: newData.category },
-                            _destroy: false
-                        }
-                    }
-                ]).skip((perPage * page) - perPage).limit(perPage).toArray()
-                const resultTotal = await getDB().collection(laptopCollectionName).aggregate([
-                    {
-                        $match: {
-                            nameProduct: { $regex: new RegExp(`${newData.nameProduct}`) },
-                            category: { $all: newData.category },
-                            _destroy: false
-                        }
-                    }
-                ]).toArray()
-                return { data: [...result], total: resultTotal.length }
-            }
-            else {
-                const result = await getDB().collection(laptopCollectionName).aggregate([
-                    {
-                        $match: {
-                            nameProduct: { $regex: new RegExp(`${newData.nameProduct}`) },
-                            _destroy: false
-                        }
-                    }
-                ]).skip((perPage * page) - perPage).limit(perPage).toArray()
-                const resultTotal = await getDB().collection(laptopCollectionName).aggregate([
-                    {
-                        $match: {
-                            nameProduct: { $regex: new RegExp(`${newData.nameProduct}`) },
-                            _destroy: false
-                        }
-                    }
-                ]).toArray()
-                return { data: [...result], total: resultTotal.length }
-            }
-        }
-
+        ]).toArray()
+        console.log({ data: [...result], total: resultTotal.length })
+        return { data: [...result], total: resultTotal.length }
     } catch (error) {
         throw new Error(error)
     }
 }
-export const orderModel = { createNew, getFullLaptopInformation, getFullorder, update, findOneById, getSearchLaptopInformation }
+export const orderModel = { createNew, findUserAndUpdateOrderList, getFullOrderInformation, getFullorder, update, findOneById, getSearchOrder }

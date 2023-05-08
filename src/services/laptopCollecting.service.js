@@ -57,6 +57,21 @@ const getFullLaptopInformation = async (userId) => {
     }
 }
 
+const getFullLaptopInformationAdmin = async (userId) => {
+    try {
+        const user = await laptopCollectingModel.getFullLaptopInformationAdmin(userId)
+        if (!user) {
+            throw new Error('not Found')
+        }
+
+        const transfromUser = cloneDeep(user)
+
+        return transfromUser
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
 const update = async (src, data) => {
     try {
         const updateData = {
@@ -70,4 +85,4 @@ const update = async (src, data) => {
     }
 }
 
-export const laptopCollectingService = { createNew, getSearchLaptopInformation, getFullLaptopInformation, getFullLaptopCollecting, update }
+export const laptopCollectingService = { createNew, getSearchLaptopInformation, getFullLaptopInformationAdmin, getFullLaptopInformation, getFullLaptopCollecting, update }

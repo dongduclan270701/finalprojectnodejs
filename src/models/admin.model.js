@@ -3,14 +3,13 @@ import { getDB } from '*/config/mongodb.js'
 import { ObjectId } from 'mongodb'
 
 // Define Board collection
-const userCollectionName = 'users'
-const userCollectionSchema = Joi.object({
+const adminCollectionName = 'admin'
+const adminCollectionSchema = Joi.object({
     username: Joi.string().required().min(3).max(20),
     password: Joi.string().required(),
     address: Joi.string().default(''),
-    phoneNumber: Joi.number().min(10).max(10).default(null),
+    phoneNumber: Joi.number().min(10).max(10),
     email: Joi.string().required(),
-    orders: Joi.array().items(Joi.string()).default([]),
     createAt: Joi.date().timestamp().default(Date.now()),
     updateAt: Joi.date().timestamp().default(null),
     status: Joi.boolean().default(true),
@@ -18,13 +17,13 @@ const userCollectionSchema = Joi.object({
 })
 
 const validateSchema = async (data) => {
-    return await userCollectionSchema.validateAsync(data, { abortEarly: false }) // Hiển thị đầy đủ lỗi nếu trong trường data có 2 field trở lên bị lỗi
+    return await adminCollectionSchema.validateAsync(data, { abortEarly: false }) // Hiển thị đầy đủ lỗi nếu trong trường data có 2 field trở lên bị lỗi
 }
 
 const createNew = async (data) => {
     try {
         const value = await validateSchema(data)
-        const dataFind = await getDB().collection(userCollectionName).aggregate([
+        const dataFind = await getDB().collection(adminCollectionName).aggregate([
             {
                 $match: {
                     email: value.email,
@@ -35,7 +34,7 @@ const createNew = async (data) => {
         if (dataFind.length > 0) {
             return { message: 'Email đã tồn tại' }
         } else {
-            const result = await getDB().collection(userCollectionName).insertOne(value)
+            const result = await getDB().collection(adminCollectionName).insertOne(value)
             return result
         }
     } catch (error) {
@@ -45,7 +44,7 @@ const createNew = async (data) => {
 
 const findOneById = async (id) => {
     try {
-        const result = await getDB().collection(userCollectionName).findOne({ _id: ObjectId(id) })
+        const result = await getDB().collection(adminCollectionName).findOne({ _id: ObjectId(id) })
         return result
     } catch (error) {
         throw new Error(error)
@@ -57,7 +56,7 @@ const update = async (id, data) => {
         const updateData = {
             ...data
         }
-        const updateUser = await getDB().collection(userCollectionName).findOneAndUpdate(
+        const updateUser = await getDB().collection(adminCollectionName).findOneAndUpdate(
             { _id: ObjectId(id) },
             { $set: updateData },
             { returnDocument: 'after' }
@@ -71,7 +70,8 @@ const update = async (id, data) => {
 
 const getFullUser = async (email) => {
     try {
-        const result = await getDB().collection(userCollectionName).aggregate([
+        
+        const result = await getDB().collection(adminCollectionName).aggregate([
             {
                 $match: {
                     email: email,
@@ -79,6 +79,7 @@ const getFullUser = async (email) => {
                 }
             }
         ]).toArray()
+        console.log(result)
         return result[0] || { message: 'Not found user' }
     } catch (error) {
         throw new Error(error)
@@ -87,7 +88,7 @@ const getFullUser = async (email) => {
 
 const getFullUserInformation = async (userId) => {
     try {
-        const result = await getDB().collection(userCollectionName).aggregate([
+        const result = await getDB().collection(adminCollectionName).aggregate([
             {
                 $match: {
                     _id: ObjectId(userId),
@@ -100,4 +101,4 @@ const getFullUserInformation = async (userId) => {
         throw new Error(error)
     }
 }
-export const UserModel = { createNew, getFullUserInformation, getFullUser, update, findOneById }
+export const AdminModel = { createNew, getFullUserInformation, getFullUser, update, findOneById }
