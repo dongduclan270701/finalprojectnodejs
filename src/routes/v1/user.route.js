@@ -25,7 +25,7 @@ router.route('/')
 router.route('/:email/:password')
     .get(userController.getFullUser)
 
-router.route('/:id')
+router.route('/:email')
     .get(userController.getFullUserInformation)
     .put(UserValidation.update, userController.update)
 

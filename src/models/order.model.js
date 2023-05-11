@@ -43,7 +43,7 @@ const createNew = async (data) => {
         data.product.map(async (item, index) => {
             const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
                 { src: item.src },
-                { $inc: { sold: item.quantity } },
+                { $inc: { sold: item.quantity, quantity: -item.quantity } },
                 { returnDocument: 'after' }
             )
             return updateProduct
@@ -66,11 +66,27 @@ const findOneById = async (id) => {
     }
 }
 
-const findUserAndUpdateOrderList = async (email, id) => {
+const findUserAndUpdateOrderList = async (email, data) => {
     try {
+        const newData = {
+            orderId: data.orderId,
+            product: [
+                {
+                    img: data.product[0].img[0],
+                    nameProduct: data.product[0].nameProduct,
+                    src: data.product[0].src,
+                    quantity: data.product[0].quantity,
+                    nowPrice: data.product[0].nowPrice,
+                    collection: data.product[0].collection
+                }],
+            shipping_process: data.shipping_process,
+            status: data.status,
+            sumOrder: data.sumOrder,
+            ship: data.ship
+        }
         const updateUser = await getDB().collection('users').findOneAndUpdate(
             { email: email },
-            { $push: { orders: id } },
+            { $push: { orders: newData } },
             { returnDocument: 'after' }
         )
         return updateUser.value
@@ -87,14 +103,21 @@ const update = async (id, data) => {
             updateAt: Date.now()
         }
         const { _id, ...newUpdateData } = updateData
-        console.log(newUpdateData)
-        const updateUser = await getDB().collection(orderName).findOneAndUpdate(
+        // console.log(newUpdateData)
+        const updateOrder = await getDB().collection(orderName).findOneAndUpdate(
             { _id: ObjectId(id) },
             { $set: newUpdateData },
             { returnDocument: 'after' }
         )
-
-        return updateUser.value
+        const updateUser = await getDB().collection('users').findOneAndUpdate(
+            // { email: newUpdateData.email },
+            // { $set: { status: newUpdateData.status, updateAt: Date.now() } },
+            { 'orders.orderId': newUpdateData.orderId },
+            { $set: { 'orders.$.status': newUpdateData.status } },
+            { returnDocument: 'after' }
+        );
+        console.log(updateUser.value)
+        return updateOrder.value
     } catch (error) {
         throw new Error(error)
     }
@@ -143,7 +166,7 @@ const getSearchOrder = async (data) => {
                                 $gte: data.firstDate,
                                 $lte: data.endDate
                             },
-                            content: 'Đã đặt đơn hàng'
+                            content: 'Ordered'
                         }
                     },
                     orderId: { $regex: new RegExp(`${data.orderId}`) },
@@ -161,7 +184,7 @@ const getSearchOrder = async (data) => {
                                 $gte: data.firstDate,
                                 $lte: data.endDate
                             },
-                            content: 'Đã đặt đơn hàng'
+                            content: 'Ordered'
                         }
                     },
                     orderId: { $regex: new RegExp(`${data.orderId}`) },

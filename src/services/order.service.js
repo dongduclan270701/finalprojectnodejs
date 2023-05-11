@@ -4,9 +4,8 @@ import { cloneDeep } from 'lodash'
 const createNew = async (data) => {
     try {
         const newOrder = await orderModel.createNew(data)
-        await orderModel.findUserAndUpdateOrderList(data.email, newOrder.insertedId.toString())
         const getNewOrder = await orderModel.findOneById(newOrder.insertedId.toString())
-        
+        await orderModel.findUserAndUpdateOrderList(data.email, getNewOrder)
         return getNewOrder
     } catch (error) {
         throw new Error(error)

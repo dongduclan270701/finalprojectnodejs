@@ -11,6 +11,12 @@ const userCollectionSchema = Joi.object({
     phoneNumber: Joi.number().min(10).max(10).default(null),
     email: Joi.string().required(),
     orders: Joi.array().items(Joi.string()).default([]),
+    // orders: Joi.array().items(
+    //     Joi.object({
+    //         productId: Joi.string().required(),
+    //         quantity: Joi.number().required()
+    //     })
+    // ).default([]),
     createAt: Joi.date().timestamp().default(Date.now()),
     updateAt: Joi.date().timestamp().default(null),
     status: Joi.boolean().default(true),

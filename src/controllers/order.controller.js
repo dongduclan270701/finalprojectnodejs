@@ -1,7 +1,5 @@
 import { orderService } from '*/services/order.service'
 import { HttpStatusCode } from '*/utils/constants'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 
 const createNew = async (req, res) => {
     try {

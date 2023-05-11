@@ -56,8 +56,8 @@ const getFullUser = async (req, res) => {
 
 const getFullUserInformation = async (req, res) => {
     try {
-        const { id } = req.params
-        const result = await userService.getFullUserInformation(id)
+        const { email } = req.params
+        const result = await userService.getFullUser(email)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
