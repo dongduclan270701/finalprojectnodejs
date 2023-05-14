@@ -1,8 +1,5 @@
-import Joi from 'joi'
+// import Joi from 'joi'
 import { getDB } from '*/config/mongodb.js'
-import { ObjectId } from 'mongodb'
-
-// Define Board collection
 const userCollectionName = 'collecting'
 // const userCollectionSchema = Joi.object({
 //     username: Joi.string().required().min(3).max(20),
@@ -21,54 +18,6 @@ const userCollectionName = 'collecting'
 //     return await userCollectionSchema.validateAsync(data, { abortEarly: false }) // Hiển thị đầy đủ lỗi nếu trong trường data có 2 field trở lên bị lỗi
 // }
 
-// const createNew = async (data) => {
-//     try {
-//         const value = await validateSchema(data)
-//         const dataFind = await getDB().collection(userCollectionName).aggregate([
-//             {
-//                 $match: {
-//                     email: value.email,
-//                     _destroy: false
-//                 }
-//             }
-//         ]).toArray()
-//         if (dataFind.length > 0) {
-//             return { message: 'Email đã tồn tại' }
-//         } else {
-//             const result = await getDB().collection(userCollectionName).insertOne(value)
-//             return result
-//         }
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// }
-
-// const findOneById = async (id) => {
-//     try {
-//         const result = await getDB().collection(userCollectionName).findOne({ _id: ObjectId(id) })
-//         return result
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// }
-
-// const update = async (id, data) => {
-//     try {
-//         const updateData = {
-//             ...data
-//         }
-//         const updateUser = await getDB().collection(userCollectionName).findOneAndUpdate(
-//             { _id: ObjectId(id) },
-//             { $set: updateData },
-//             { returnDocument: 'after' }
-//         )
-//         return updateUser.value
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// }
-
-
 const getCollectingByName = async (name) => {
     try {
         const result = await getDB().collection(userCollectionName).aggregate([
@@ -84,25 +33,15 @@ const getCollectingByName = async (name) => {
     }
 }
 
-// const getFullUserInformation = async (userId) => {
-//     try {
-//         const result = await getDB().collection(userCollectionName).aggregate([
-//             {
-//                 $match: {
-//                     _id: ObjectId(userId),
-//                     _destroy: false
-//                 }
-//             }
-//         ]).toArray()
-//         return result[0] || { message: 'Not found user' }
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// }
+const getFullCollection = async () => {
+    try {
+        const result = await getDB().collection(userCollectionName).find({}).toArray()
+        return result
+    } catch (error) {
+        throw new Error(error)
+    }
+}
 export const collectingModel = { 
-    // createNew, 
-    // getFullUserInformation, 
-    getCollectingByName, 
-    // update, 
-    // findOneById 
+    getFullCollection,
+    getCollectingByName
 }

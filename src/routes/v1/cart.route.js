@@ -1,6 +1,5 @@
 import express from 'express'
-import { collectingController } from '*/controllers/collecting.controller'
-// import { laptopCollectingValidation } from '*/validations/user.validation'
+import { cartController } from '*/controllers/cart.controller'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
@@ -19,9 +18,12 @@ const auth = (req, res, next) => {
 
 const router = express.Router()
 
-router.route('/:name')
-    .get(collectingController.getCollectingByName)
-router.route('/')
-    .get(collectingController.getFullCollection)
+// router.route('/')
+//     .get((req, res) => cartController.getFullCart(req, res))
+//     .post(cartValidation.createNew, cartController.createNew)
 
-export const collectingRoutes = router
+router.route('/:email')
+    .get(cartController.getFullCartInformation)
+    .put(cartController.update)
+
+export const cartRoutes = router

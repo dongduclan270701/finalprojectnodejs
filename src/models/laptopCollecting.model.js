@@ -20,6 +20,8 @@ const laptopCollectionSchema = Joi.object({
     description: Joi.array().required().items(Joi.array().ordered(Joi.string(), Joi.string())),
     category: Joi.array().required().items(Joi.string()),
     collection: Joi.string().default(laptopCollectionName),
+    rating: Joi.array().items(Joi.object()).default([]),
+    exchange: Joi.array().items(Joi.object()).default([]),
     createAt: Joi.date().timestamp().default(Date.now()),
     updateAt: Joi.date().timestamp().default(null),
     _destroy: Joi.boolean().default(false)

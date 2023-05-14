@@ -5,6 +5,8 @@ import { collectingRoutes } from './collecting.route'
 import { laptopCollectingRoutes } from './laptopCollecting.route'
 import { orderRoutes } from './order.route'
 import { adminRoutes } from './admin.route'
+import { portfolioRoutes } from './portfolio.route'
+import { cartRoutes } from './cart.route'
 import jwt from 'jsonwebtoken'
 
 const auth = (req, res, next) => {
@@ -38,5 +40,9 @@ router.use('/collecting', collectingRoutes)
 
 router.use('/laptopCollecting', laptopCollectingRoutes)
 
+router.use('/searchCustomer', portfolioRoutes)
+
 router.use('/order', orderRoutes)
+
+router.use('/cart', cartRoutes)
 export const apiV1 = router

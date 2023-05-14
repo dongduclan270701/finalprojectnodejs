@@ -65,6 +65,16 @@ const getCollectingByName = async (req, res) => {
         })
     }
 }
+const getFullCollection = async (req, res) => {
+    try {
+        const result = await collectingService.getFullCollection()
+        res.status(HttpStatusCode.OK).json(result)
+    } catch (error) {
+        res.status(HttpStatusCode.INTERNAL_SERVER).json({
+            error: error.message
+        })
+    }
+}
 
 // const update = async (req, res) => {
 //     try {
@@ -79,8 +89,8 @@ const getCollectingByName = async (req, res) => {
 // }
 
 export const collectingController = { 
-    // createNew, 
-    getCollectingByName,
+    getFullCollection,
+    getCollectingByName
     // getFullUser, 
     // update 
 }
