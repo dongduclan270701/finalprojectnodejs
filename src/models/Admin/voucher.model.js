@@ -3,7 +3,7 @@ import { getDB } from '*/config/mongodb.js'
 import { ObjectId } from 'mongodb'
 
 // Define Board collection
-const laptopCollectionName = 'laptop'
+const laptopCollectionName = 'voucher'
 const laptopCollectionSchema = Joi.object({
     img: Joi.array().items(Joi.string()).required(),
     src: Joi.string().required(),

@@ -10,6 +10,7 @@ const userCollectionSchema = Joi.object({
     address: Joi.string().default(''),
     phoneNumber: Joi.number().min(10).max(10).default(null),
     email: Joi.string().required(),
+    image: Joi.string().default('https://res.cloudinary.com/dolydpat4/image/upload/v1683985614/hsviimyofhc2xjjrni6u.jpg'),
     orders: Joi.array().items(Joi.string()).default([]),
     createAt: Joi.date().timestamp().default(Date.now()),
     updateAt: Joi.date().timestamp().default(null),

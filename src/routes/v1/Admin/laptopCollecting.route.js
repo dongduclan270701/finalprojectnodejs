@@ -3,20 +3,6 @@ import { laptopCollectingController } from '*/controllers/Admin/laptopCollecting
 import { laptopCollectingValidation } from '*/validations/laptopCollecting.validation'
 import jwt from 'jsonwebtoken'
 
-const authCustomer = (req, res, next) => {
-    const token = req.header('auth-token-user')
-    if (!token) {
-
-        return res.status(401).send('Access Denied')
-    }
-    try {
-        const verified = jwt.verify(token, process.env.TOKEN_SECRET_CUSTOMER)
-        req.result = verified
-        next()
-    } catch (error) {
-        res.status(500).send('Invalid token')
-    }
-}
 const authAdmin = (req, res, next) => {
     const token = req.header('auth-token-admin')
     if (!token) {

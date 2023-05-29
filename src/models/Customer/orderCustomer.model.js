@@ -1,6 +1,64 @@
+import Joi from 'joi'
 import { getDB } from '*/config/mongodb.js'
 import { ObjectId } from 'mongodb'
+import crypto from 'crypto'
+
+// Define Board collection
 const orderName = 'order'
+const orderSchema = Joi.object({
+    product: Joi.array().required().items(Joi.object()),
+    email: Joi.string().required(),
+    username: Joi.string().required(),
+    phoneNumber: Joi.string().required(),
+    address: Joi.string().required(),
+    city: Joi.string().required(),
+    district: Joi.string().required(),
+    commune: Joi.string().required(),
+    discountCode: Joi.array().items(Joi.string()),
+    shipping_process: Joi.array().required().items(Joi.object({
+        time: Joi.string().required(),
+        date: Joi.string().required(),
+        content: Joi.string().required()
+    })),
+    method_payment: Joi.string().required(),
+    ship: Joi.number().required(),
+    sumOrder: Joi.number().required(),
+    status: Joi.string(),
+    createAt: Joi.date().timestamp().default(Date.now()),
+    updateAt: Joi.date().timestamp().default(null),
+    _destroy: Joi.boolean().default(false),
+    statusReview: Joi.object().default({
+        status: false,
+        product: []
+    }),
+    orderId: Joi.string()
+})
+
+const validateSchema = async (data) => {
+    return await orderSchema.validateAsync(data, { abortEarly: false }) // Hiển thị đầy đủ lỗi nếu trong trường data có 2 field trở lên bị lỗi
+}
+
+const createNew = async (data) => {
+    try {
+        // console.log(data)
+        const id = crypto.randomBytes(12).toString('hex')
+        const newData = { ...data, orderId: id }
+        data.product.map(async (item, index) => {
+            const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
+                { src: item.src },
+                { $inc: { sold: item.quantity, quantity: -item.quantity } },
+                { returnDocument: 'after' }
+            )
+            return updateProduct
+        })
+
+        const value = await validateSchema(newData)
+        const result = await getDB().collection(orderName).insertOne(value)
+        return result
+    } catch (error) {
+        throw new Error(error)
+    }
+}
 
 const findOneById = async (id) => {
     try {
@@ -41,13 +99,14 @@ const findUserAndUpdateOrderList = async (email, data) => {
     }
 }
 
-const updateOrder = async (id, data) => {
+const update = async (id, data) => {
     try {
         const updateData = {
             ...data,
             updateAt: Date.now()
         }
         const { _id, ...newUpdateData } = updateData
+        // console.log(newUpdateData)
         const updateOrder = await getDB().collection(orderName).findOneAndUpdate(
             { _id: ObjectId(id) },
             { $set: newUpdateData },
@@ -64,8 +123,20 @@ const updateOrder = async (id, data) => {
     }
 }
 
+const ratingOrder = async (id, data) => {
+    try {
+        const updateOrder = await getDB().collection(orderName).findOneAndUpdate(
+            { orderId: id },
+            { $set: { statusReview: data } },
+            { returnDocument: 'after' }
+        )
+        return updateOrder.value
+    } catch (error) {
+        throw new Error(error)
+    }
+}
 
-const getFullOrder = async (data) => {
+const getFullorder = async (data) => {
     try {
         let perPage = 10
         let page = parseInt(data.count)
@@ -82,7 +153,7 @@ const getFullOrderInformation = async (id) => {
         const result = await getDB().collection(orderName).aggregate([
             {
                 $match: {
-                    _id: ObjectId(id),
+                    orderId: id,
                     _destroy: false
                 }
             }
@@ -138,44 +209,4 @@ const getSearchOrder = async (data) => {
         throw new Error(error)
     }
 }
-
-const ratingOrder = async (id, data) => {
-    try {
-        if (data.statusOrder === 'Accept') {
-            const updateOrder = await getDB().collection(orderName).findOneAndUpdate(
-                { orderId: id },
-                { $set: { statusReview: data } },
-                { returnDocument: 'after' }
-            )
-            data.product.map(async (item, index) => {
-                const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
-                    { nameProduct: item.nameProduct },
-                    { $push : { rating: { star: item.star, content: item.content, username: data.username, email: data.email, img: data.image, date: data.date, time: data.time } } },
-                    { returnDocument: 'after' }
-                )
-                return updateProduct
-            })
-            return updateOrder.value
-        }
-        else {
-            const updateOrder = await getDB().collection(orderName).findOneAndUpdate(
-                { orderId: id },
-                { $set: { statusReview: data } },
-                { returnDocument: 'after' }
-            )
-            return updateOrder.value
-        }
-
-    } catch (error) {
-        throw new Error(error)
-    }
-}
-export const orderAdminModel = {
-    findUserAndUpdateOrderList,
-    getFullOrderInformation,
-    getFullOrder,
-    updateOrder,
-    findOneById,
-    getSearchOrder,
-    ratingOrder
-}
+export const orderCustomerModel = { createNew, findUserAndUpdateOrderList, getFullOrderInformation, getFullorder, update, findOneById, getSearchOrder, ratingOrder }

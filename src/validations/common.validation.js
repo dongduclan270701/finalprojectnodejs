@@ -1,12 +1,11 @@
 import Joi from 'joi'
 import { HttpStatusCode } from '*/utils/constants'
 
-const createNewEmployee = async (req, res, next) => {
+const createNew = async (req, res, next) => {
     const condition = Joi.object({
-        username: Joi.string().required(),
+        username: Joi.string().required().min(3).max(20),
         password: Joi.string().required(),
-        email: Joi.string().required(),
-        role: Joi.string().required()
+        email: Joi.string().required()
     })
     try {
         await condition.validateAsync(req.body, { abortEarly: false })
@@ -18,7 +17,7 @@ const createNewEmployee = async (req, res, next) => {
     }
 }
 
-const updateEmployee = async (req, res, next) => {
+const update = async (req, res, next) => {
     const condition = Joi.object({
     })
     try {
@@ -31,4 +30,4 @@ const updateEmployee = async (req, res, next) => {
     }
 }
 
-export const AdminValidation = { createNewEmployee, updateEmployee }
+export const UserValidation = { createNew, update }

@@ -32,7 +32,7 @@ const createNew = async (req, res, next) => {
     }
 }
 
-const update = async (req, res, next) => {
+const updateOrder = async (req, res, next) => {
     const condition = Joi.object({
     })
     try {
@@ -45,4 +45,4 @@ const update = async (req, res, next) => {
     }
 }
 
-export const orderAdminValidation = { createNew, update }
+export const orderAdminValidation = { createNew, updateOrder }

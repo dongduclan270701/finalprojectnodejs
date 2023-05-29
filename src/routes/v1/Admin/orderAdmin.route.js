@@ -11,7 +11,13 @@ const authAdmin = (req, res, next) => {
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET_ADMIN)
         req.result = verified
-        next()
+        if (verified.role === 'CEO') {
+            next()
+        } else if (verified.role === 'PRODUCT') {
+            next()
+        } else {
+            return res.status(401).json({ message: 'cccccc' })
+        }
     } catch (error) {
         res.status(500).send('Invalid token')
     }
@@ -20,8 +26,7 @@ const authAdmin = (req, res, next) => {
 const router = express.Router()
 
 router.route('/')
-    .get(authAdmin, orderAdminController.getFullorder)
-    .post(orderAdminValidation.createNew, orderAdminController.createNew)
+    .get(authAdmin, orderAdminController.getFullOrder)
 
 router.route('/search')
     .get(authAdmin, orderAdminController.getSearchOrder)
@@ -30,6 +35,9 @@ router.route('/:id')
     .get(authAdmin, orderAdminController.getFullOrderInformation)
 
 router.route('/:id')
-    .put(authAdmin, orderAdminValidation.update, orderAdminController.update)
+    .put(authAdmin, orderAdminValidation.updateOrder, orderAdminController.updateOrder)
 
+router.route('/ratingOrder/:id')
+    .put(authAdmin, orderAdminController.ratingOrder)
+    
 export const orderAdminRoutes = router

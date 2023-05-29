@@ -1,62 +1,73 @@
 import { AdminModel } from '*/models/Admin/admin.model'
 import { cloneDeep } from 'lodash'
 
-const createNew = async (data) => {
+const createNewEmployee = async (data) => {
     try {
-        const newUser = await AdminModel.createNew(data)
-        if (newUser.message === 'Email đã tồn tại') {
-            return newUser
+        const newEmployee = await AdminModel.createNewEmployee(data)
+        if (newEmployee.message === 'Email đã tồn tại') {
+            return newEmployee
         }
         else {
-            const getNewCard = await AdminModel.findOneById(newUser.insertedId.toString())
-            return getNewCard
+            const getNewEmployee = await AdminModel.findOneById(newEmployee.insertedId.toString())
+            return getNewEmployee
         }
     } catch (error) {
         throw new Error(error)
     }
 }
 
-const getFullUser = async (email) => {
+const loginEmployee = async (email) => {
     try {
-        const user = await AdminModel.getFullUser(email)
-        if (!user) {
+        const employee = await AdminModel.loginEmployee(email)
+        if (!employee) {
             throw new Error('not Found')
         }
-
-        const transfromUser = cloneDeep(user)
-
-        return transfromUser
+        const transformEmployee = cloneDeep(employee)
+        return transformEmployee
     } catch (error) {
         throw new Error(error)
     }
 }
 
-const getFullUserInformation = async (userId) => {
+const getInformationEmployee = async (employeeId) => {
     try {
-        const user = await AdminModel.getFullUserInformation(userId)
-        if (!user) {
+        const employee = await AdminModel.getInformationEmployee(employeeId)
+        if (!employee) {
             throw new Error('not Found')
         }
-
-        const transfromUser = cloneDeep(user)
-
-        return transfromUser
+        const transformEmployee = cloneDeep(employee)
+        return transformEmployee
     } catch (error) {
         throw new Error(error)
     }
 }
 
-const update = async (id, data) => {
+const updateEmployee = async (id, data) => {
     try {
         const updateData = {
             ...data,
             updateAt: Date.now()
         }
-        const updatedUser = await AdminModel.update(id, updateData)
+        const updatedUser = await AdminModel.updateEmployee(id, updateData)
         return updatedUser
     } catch (error) {
         throw new Error(error)
     }
 }
 
-export const adminService = { createNew, getFullUserInformation, getFullUser, update }
+const getAllEmployee = async (data) => {
+    try {
+        const listOfEmployee = await AdminModel.getAllEmployee(data)
+        const transformEmployee = cloneDeep(listOfEmployee)
+        return transformEmployee
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+export const adminService = { 
+    getAllEmployee,
+    createNewEmployee, 
+    getInformationEmployee, 
+    loginEmployee, 
+    updateEmployee 
+}

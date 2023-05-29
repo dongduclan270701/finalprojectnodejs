@@ -40,7 +40,7 @@ const getFullUser = async (req, res) => {
             } else {
                 const token = jwt.sign({ _id: result._id, role: 'Customer' }, process.env.TOKEN_SECRET_CUSTOMER)
                 // res.header('auth-token', token).send(token)
-                res.status(HttpStatusCode.OK).json({ token: token, user: [result.email, result.username, result.phoneNumber, result.address] })
+                res.status(HttpStatusCode.OK).json({ token: token, user: [result.email, result.username, result.phoneNumber, result.address, result.image] })
             }
         }
         //Create and assign a token

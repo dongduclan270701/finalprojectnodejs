@@ -1,11 +1,25 @@
-import { orderAdminService } from '*/services/Admin/orderAdmin.service'
+import { orderCustomerService } from '*/services/Customer/orderCustomer.service'
 import { HttpStatusCode } from '*/utils/constants'
 
-const getFullOrder = async (req, res) => {
+const createNew = async (req, res) => {
+    try {
+        const data = req.body
+        const result = await orderCustomerService.createNew(data)
+        res.status(HttpStatusCode.OK).json(result)
+    } catch (error) {
+        res.status(HttpStatusCode.INTERNAL_SERVER).json({
+            error: error.message
+        })
+    }
+}
+
+const getFullorder = async (req, res) => {
     try {
         const data = req.query
-        const result = await orderAdminService.getFullOrder(data)
+        const result = await orderCustomerService.getFullorder(data)
+        
         res.status(HttpStatusCode.OK).json(result)
+
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
             error: error.message
@@ -16,7 +30,7 @@ const getFullOrder = async (req, res) => {
 const getFullOrderInformation = async (req, res) => {
     try {
         const { id } = req.params
-        const result = await orderAdminService.getFullOrderInformation(id)
+        const result = await orderCustomerService.getFullOrderInformation(id)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -28,7 +42,7 @@ const getFullOrderInformation = async (req, res) => {
 const getSearchOrder = async (req, res) => {
     try {
         const data = req.query
-        const result = await orderAdminService.getSearchOrder(data)
+        const result = await orderCustomerService.getSearchOrder(data)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -37,14 +51,14 @@ const getSearchOrder = async (req, res) => {
     }
 }
 
-const updateOrder = async (req, res) => {
+const update = async (req, res) => {
     try {
         const { id } = req.params
-        const result = await orderAdminService.updateOrder(id, req.body)
+        const result = await orderCustomerService.update(id, req.body)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
-            error: error.message00
+            error: error.message
         })
     }
 }
@@ -52,7 +66,7 @@ const updateOrder = async (req, res) => {
 const ratingOrder = async (req, res) => {
     try {
         const { id } = req.params
-        const result = await orderAdminService.ratingOrder(id, req.body)
+        const result = await orderCustomerService.ratingOrder(id, req.body)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
@@ -61,10 +75,4 @@ const ratingOrder = async (req, res) => {
     }
 }
 
-export const orderAdminController = { 
-    getSearchOrder, 
-    getFullOrderInformation, 
-    getFullOrder, 
-    updateOrder,
-    ratingOrder
-}
+export const orderCustomerController = { createNew, getSearchOrder, getFullOrderInformation, getFullorder, update, ratingOrder }
