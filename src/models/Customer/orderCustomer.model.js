@@ -25,7 +25,10 @@ const orderSchema = Joi.object({
     sumOrder: Joi.number().required(),
     status: Joi.string(),
     createAt: Joi.date().timestamp().default(Date.now()),
+    createBy: Joi.object(),
     updateAt: Joi.date().timestamp().default(null),
+    updateBy: Joi.object().default({}),
+    reasonCancel: Joi.string().default(''),
     _destroy: Joi.boolean().default(false),
     statusReview: Joi.object().default({
         status: false,
@@ -43,6 +46,7 @@ const createNew = async (data) => {
         // console.log(data)
         const id = crypto.randomBytes(12).toString('hex')
         const newData = { ...data, orderId: id }
+        // console.log(newData)
         data.product.map(async (item, index) => {
             const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
                 { src: item.src },

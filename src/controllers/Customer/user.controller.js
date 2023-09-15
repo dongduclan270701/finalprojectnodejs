@@ -14,7 +14,7 @@ const createNew = async (req, res) => {
             res.status(HttpStatusCode.OK).json('Email đã tồn tại')
         }
         else {
-            const token = jwt.sign({ _id: result._id, role: 'Customer' }, process.env.TOKEN_SECRET_CUSTOMER)
+            const token = jwt.sign({ _id: result._id, role: 'Customer', email: result.email, username: result.username }, process.env.TOKEN_SECRET_CUSTOMER)
             // res.header('auth-token', token).send(token)
             res.status(HttpStatusCode.OK).json({ token: token, user: [result.email, result.username, result.phoneNumber, result.address] })
             // res.status(HttpStatusCode.OK).json(result)
@@ -38,15 +38,11 @@ const getFullUser = async (req, res) => {
             if (!validPassword) {
                 res.status(HttpStatusCode.OK).json('Mật khẩu không chính xác')
             } else {
-                const token = jwt.sign({ _id: result._id, role: 'Customer' }, process.env.TOKEN_SECRET_CUSTOMER)
+                const token = jwt.sign({ _id: result._id, role: 'Customer', email: result.email, username: result.username }, process.env.TOKEN_SECRET_CUSTOMER)
                 // res.header('auth-token', token).send(token)
                 res.status(HttpStatusCode.OK).json({ token: token, user: [result.email, result.username, result.phoneNumber, result.address, result.image] })
             }
         }
-        //Create and assign a token
-        // console.log(validPassword)
-        // res.status(HttpStatusCode.OK).json(result)
-
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
             error: error.message
