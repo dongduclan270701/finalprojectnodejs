@@ -65,9 +65,10 @@ const update = async (id, data) => {
         const updateData = {
             ...data
         }
+        const {_id, ...newUpdateData} = updateData
         const updateUser = await getDB().collection(userCollectionName).findOneAndUpdate(
             { _id: ObjectId(id) },
-            { $set: updateData },
+            { $set: newUpdateData },
             { returnDocument: 'after' }
         )
         return updateUser.value

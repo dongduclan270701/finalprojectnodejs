@@ -20,13 +20,16 @@ const authUser = (req, res, next) => {
 const router = express.Router()
 
 router.route('/')
-    .post( UserValidation.createNew, userController.createNew)
+    .post(UserValidation.createNew, userController.createNew)
 
 router.route('/:email/:password')
     .get(userController.getFullUser)
 
-router.route('/:email')
+router.route('/:id')
     .get(authUser, userController.getFullUserInformation)
     .put(authUser, UserValidation.update, userController.update)
+
+router.route('/updatePassword/:id')
+    .put(authUser, UserValidation.update, userController.updatePassword)
 
 export const userRoutes = router

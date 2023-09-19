@@ -110,9 +110,8 @@ const update = async (id, data) => {
             updateAt: Date.now()
         }
         const { _id, ...newUpdateData } = updateData
-        // console.log(newUpdateData)
         const updateOrder = await getDB().collection(orderName).findOneAndUpdate(
-            { _id: ObjectId(id) },
+            { orderId: id },
             { $set: newUpdateData },
             { returnDocument: 'after' }
         )

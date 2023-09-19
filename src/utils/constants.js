@@ -10,4 +10,4 @@ export const HttpStatusCode = {
     INTERNAL_SERVER: 500,
     SERVICE_UNAVAILABLE: 503
 }
-export const WHITELIST_DOMAINS = ['http://localhost:3000', 'http://localhost:8017/']
+export const WHITELIST_DOMAINS = ['http://localhost:3000', 'http://localhost:8017/, http://192.168.62.101:3000/, http://192.168.62.101:8017/']

@@ -5,6 +5,7 @@ import { collectingCustomerRoutes } from './Customer/collectingCustomer.route'
 import { laptopCollectingCustomerRoutes } from './Customer/laptopCollectingCustomer.route'
 import { orderCustomerRoutes } from './Customer/orderCustomer.route'
 import { portfolioRoutes } from './Customer/portfolio.route'
+import { searchGoodsRoutes } from './Customer/searchCustomer.route'
 import { cartCustomerRoutes } from './Customer/cartCustomer.route'
 import { chatRoutes } from './Chat/Chat.route'
 const router = express.Router()
@@ -22,6 +23,8 @@ router.use('/collecting', collectingCustomerRoutes)
 router.use('/laptopCollectingCustomer', laptopCollectingCustomerRoutes)
 
 router.use('/searchCustomer', portfolioRoutes)
+
+router.use('/searchGoods', searchGoodsRoutes)
 
 router.use('/orderUser', orderCustomerRoutes)
 
