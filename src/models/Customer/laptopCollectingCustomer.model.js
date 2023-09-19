@@ -23,9 +23,11 @@ const laptopCollectionName = 'laptop'
 //     }
 // }
 
-const getFullLaptopInformation = async (src) => {
+const getFullLaptopInformation = async (src, data) => {
     try {
-        await getDB().collection(laptopCollectionName).findOneAndUpdate(
+        console.log(src)
+        console.log(data)
+        await getDB().collection(data).findOneAndUpdate(
             { src: src },
             { $inc: { view: 1 } },
             { returnDocument: 'after' }
@@ -34,14 +36,14 @@ const getFullLaptopInformation = async (src) => {
         const currentDate = new Date();
         const currentDay = currentDate.getDate();
         const currentMonth = currentDate.getMonth() + 1; // Tháng trong JavaScript được đếm từ 0
-        const result = await getDB().collection(laptopCollectionName).aggregate([
+        const result = await getDB().collection(data).aggregate([
             {
                 $match: {
                     src: src,
                     _destroy: false
                 }
             }
-        ]).toArray();
+        ]).toArray()
         const value = result[0] || { message: 'Not found product' };
         // Tìm ngày hiện tại trong viewInMonth
         const viewInMonthIndex = value.viewInMonth.findIndex(item => item.day === currentDay);
@@ -61,7 +63,7 @@ const getFullLaptopInformation = async (src) => {
             // Nếu tháng chưa tồn tại, tạo một bản ghi mới
             value.viewInYear.push({ month: currentMonth, view: 1 })
         }
-        const updateUser = await getDB().collection(laptopCollectionName).findOneAndUpdate(
+        const updateUser = await getDB().collection(data).findOneAndUpdate(
             { src: src },
             { $set: value },
             { returnDocument: 'after' }

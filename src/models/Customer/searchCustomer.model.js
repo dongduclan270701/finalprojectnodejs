@@ -2,7 +2,6 @@ import { getDB } from '*/config/mongodb.js'
 
 const getSearchGoods = async (data) => {
     try {
-        console.log(data)
         // const filteredCategory = data.category.filter(Boolean)
         const result = await getDB().collection(data.collection.toLowerCase().replace(/ /g, '')).aggregate([
             {

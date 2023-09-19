@@ -6,7 +6,8 @@ import jwt from 'jsonwebtoken'
 const getFullLaptopInformation = async (req, res) => {
     try {
         const { id } = req.params
-        const result = await laptopCollectingCustomerService.getFullLaptopInformation(id)
+        const { nameCollection } = req.query
+        const result = await laptopCollectingCustomerService.getFullLaptopInformation(id, nameCollection)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
