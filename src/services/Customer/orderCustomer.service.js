@@ -6,7 +6,7 @@ const createNew = async (data) => {
         const newOrder = await orderCustomerModel.createNew(data)
         const getNewOrder = await orderCustomerModel.findOneById(newOrder.insertedId.toString())
         await orderCustomerModel.findUserAndUpdateOrderList(data.email, getNewOrder)
-        return getNewOrder
+        return newOrder
     } catch (error) {
         throw new Error(error)
     }

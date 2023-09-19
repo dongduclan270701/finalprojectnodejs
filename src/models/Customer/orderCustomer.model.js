@@ -34,28 +34,79 @@ const orderSchema = Joi.object({
         status: false,
         product: []
     }),
-    orderId: Joi.string()
+    orderId: Joi.string(),
+    createDate: Joi.string()
 })
 
 const validateSchema = async (data) => {
     return await orderSchema.validateAsync(data, { abortEarly: false }) // Hiển thị đầy đủ lỗi nếu trong trường data có 2 field trở lên bị lỗi
 }
 
+// const createNew = async (data) => {
+//     try {
+//         // console.log(data)
+//         const id = crypto.randomBytes(12).toString('hex')
+//         const newData = { ...data, orderId: id }
+//         // console.log(newData)
+//         data.product.map(async (item, index) => {
+//             const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
+//                 { src: item.src },
+//                 { $inc: { sold: item.quantity, quantity: -item.quantity } },
+//                 { returnDocument: 'after' }
+//             )
+//             return updateProduct
+//         })
+
+//         const value = await validateSchema(newData)
+//         const result = await getDB().collection(orderName).insertOne(value)
+//         return result
+//     } catch (error) {
+//         throw new Error(error)
+//     }
+// }
+
 const createNew = async (data) => {
     try {
-        // console.log(data)
         const id = crypto.randomBytes(12).toString('hex')
         const newData = { ...data, orderId: id }
-        // console.log(newData)
-        data.product.map(async (item, index) => {
+        const currentDate = new Date()
+        const currentDay = currentDate.getDate()
+        const currentMonth = currentDate.getMonth() + 1
+        for (const item of newData.product) {
             const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
                 { src: item.src },
                 { $inc: { sold: item.quantity, quantity: -item.quantity } },
                 { returnDocument: 'after' }
             )
-            return updateProduct
-        })
+            const soldInMonthIndex = updateProduct.value.soldInMonth.findIndex(item => item.day === currentDay);
+            if (soldInMonthIndex !== -1) {
+                // Nếu ngày đã tồn tại, tăng giá trị sold tương ứng
+                if (currentDay === 1 && updateProduct.value.soldInMonth.length > 1) {
+                    updateProduct.value.soldInMonth = []
+                    updateProduct.value.soldInMonth.push({ day: currentDay, sold: item.quantity })
+                } else {
+                    updateProduct.value.soldInMonth[soldInMonthIndex].sold += item.quantity;
+                }
+            } else {
+                // Nếu ngày chưa tồn tại, tạo một bản ghi mới
+                updateProduct.value.soldInMonth.push({ day: currentDay, sold: item.quantity });
+            }
 
+            // Tìm tháng hiện tại trong soldInYear
+            const soldInYearIndex = updateProduct.value.soldInYear.findIndex(item => item.month === currentMonth);
+            if (soldInYearIndex !== -1) {
+                // Nếu tháng đã tồn tại, tăng giá trị sold tương ứng
+                updateProduct.value.soldInYear[soldInYearIndex].sold += item.quantity;
+            } else {
+                // Nếu tháng chưa tồn tại, tạo một bản ghi mới
+                updateProduct.value.soldInYear.push({ month: currentMonth, sold: item.quantity });
+            }
+            const updateNewProduct = await getDB().collection(item.collection).findOneAndUpdate(
+                { src: item.src },
+                { $set: updateProduct.value },
+                { returnDocument: 'after' }
+            )
+        }
         const value = await validateSchema(newData)
         const result = await getDB().collection(orderName).insertOne(value)
         return result
@@ -63,6 +114,8 @@ const createNew = async (data) => {
         throw new Error(error)
     }
 }
+
+
 
 const findOneById = async (id) => {
     try {
@@ -93,7 +146,7 @@ const findUserAndUpdateOrderList = async (email, data) => {
         }
         const updateUser = await getDB().collection('users').findOneAndUpdate(
             { email: email },
-            { $push: { orders: newData } },
+            { $push: { orders: { $each: [newData], $position: 0 } } },
             { returnDocument: 'after' }
         )
         return updateUser.value

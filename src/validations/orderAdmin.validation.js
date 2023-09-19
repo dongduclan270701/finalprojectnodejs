@@ -20,7 +20,8 @@ const createNew = async (req, res, next) => {
             date: Joi.string().required(),
             content: Joi.string().required()
         })),
-        status: Joi.string()
+        status: Joi.string(),
+        createDate: Joi.string().required()
     })
     try {
         await condition.validateAsync(req.body, { abortEarly: false })

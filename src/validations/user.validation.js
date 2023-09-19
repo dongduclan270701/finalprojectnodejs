@@ -3,9 +3,14 @@ import { HttpStatusCode } from '*/utils/constants'
 
 const createNew = async (req, res, next) => {
     const condition = Joi.object({
-        username: Joi.string().required().min(3).max(20),
+        username: Joi.string().required(),
         password: Joi.string().required(),
-        email: Joi.string().required()
+        email: Joi.string().required(),
+        lastLogin: Joi.object().default({
+            time: Joi.string(),
+            date: Joi.string()
+        }),
+        createdDate: Joi.string()
     })
     try {
         await condition.validateAsync(req.body, { abortEarly: false })

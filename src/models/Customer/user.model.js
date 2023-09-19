@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb'
 // Define Board collection
 const userCollectionName = 'users'
 const userCollectionSchema = Joi.object({
-    username: Joi.string().required().min(3).max(20),
+    username: Joi.string().required(),
     password: Joi.string().required(),
     address: Joi.string().default(''),
     phoneNumber: Joi.number().min(10).max(10).default(null),
@@ -15,7 +15,13 @@ const userCollectionSchema = Joi.object({
     createAt: Joi.date().timestamp().default(Date.now()),
     updateAt: Joi.date().timestamp().default(null),
     status: Joi.boolean().default(true),
-    _destroy: Joi.boolean().default(false)
+    _destroy: Joi.boolean().default(false),
+    age: Joi.number().default(18),
+    lastLogin: Joi.object().default({
+        time: Joi.string(),
+        date: Joi.string()
+    }),
+    createdDate: Joi.string()
 })
 
 const validateSchema = async (data) => {

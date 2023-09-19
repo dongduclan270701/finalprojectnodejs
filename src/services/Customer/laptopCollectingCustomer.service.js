@@ -7,13 +7,24 @@ const getFullLaptopInformation = async (userId) => {
         if (!user) {
             throw new Error('not Found')
         }
-
         const transformUser = cloneDeep(user)
-
         return transformUser
     } catch (error) {
         throw new Error(error)
     }
 }
 
-export const laptopCollectingCustomerService = { getFullLaptopInformation }
+const getBestLaptop = async () => {
+    try {
+        const user = await laptopCollectingCustomerModel.getBestLaptop()
+        const transformUser = cloneDeep(user)
+        return transformUser
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+export const laptopCollectingCustomerService = {
+    getFullLaptopInformation,
+    getBestLaptop
+}
