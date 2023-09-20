@@ -25,8 +25,6 @@ const laptopCollectionName = 'laptop'
 
 const getFullLaptopInformation = async (src, data) => {
     try {
-        console.log(src)
-        console.log(data)
         await getDB().collection(data).findOneAndUpdate(
             { src: src },
             { $inc: { view: 1 } },
@@ -78,17 +76,84 @@ const getFullLaptopInformation = async (src, data) => {
 const getBestLaptop = async () => {
     try {
         let perPage = 4
-        const result = await getDB().collection(laptopCollectionName).aggregate([
-            {
-                $match: {
-                    _destroy: false
+        const [
+            resultBestLaptop,
+            resultBestLaptopGaming,
+            resultBestPcGaming,
+            resultBestPcCreator,
+            resultBestPcCompany,
+            resultBestApple,
+        ] = await Promise.all([
+            getDB().collection('laptop').aggregate([
+                {
+                    $match: {
+                        _destroy: false
+                    }
+                },
+                {
+                    $sort: { sold: -1 }
                 }
-            },
-            {
-                $sort: { sold: -1 }
-            }
-        ]).limit(perPage).toArray()
-        return result
+            ]).limit(perPage).toArray(),
+            getDB().collection('laptop-gaming').aggregate([
+                {
+                    $match: {
+                        _destroy: false
+                    }
+                },
+                {
+                    $sort: { sold: -1 }
+                }
+            ]).limit(perPage).toArray(),
+            getDB().collection('pc-gaming').aggregate([
+                {
+                    $match: {
+                        _destroy: false
+                    }
+                },
+                {
+                    $sort: { sold: -1 }
+                }
+            ]).limit(perPage).toArray(),
+            getDB().collection('pc-creator').aggregate([
+                {
+                    $match: {
+                        _destroy: false
+                    }
+                },
+                {
+                    $sort: { sold: -1 }
+                }
+            ]).limit(perPage).toArray(),
+            getDB().collection('pc-company').aggregate([
+                {
+                    $match: {
+                        _destroy: false
+                    }
+                },
+                {
+                    $sort: { sold: -1 }
+                }
+            ]).limit(perPage).toArray(),
+            getDB().collection('apple').aggregate([
+                {
+                    $match: {
+                        _destroy: false
+                    }
+                },
+                {
+                    $sort: { sold: -1 }
+                }
+            ]).limit(perPage).toArray()
+        ])
+        return {
+            resultBestLaptop,
+            resultBestLaptopGaming,
+            resultBestPcGaming,
+            resultBestPcCreator,
+            resultBestPcCompany,
+            resultBestApple
+        }
+
     } catch (error) {
         throw new Error(error)
     }
