@@ -14,7 +14,7 @@ const createNew = async (req, res) => {
             res.status(HttpStatusCode.OK).json('Email already exists')
         }
         else {
-            const token = jwt.sign({ _id: result._id, role: 'Customer', email: result.email, username: result.username }, process.env.TOKEN_SECRET_CUSTOMER)
+            const token = jwt.sign({ _id: result._id, role: 'Customer', email: result.email }, process.env.TOKEN_SECRET_CUSTOMER)
             // res.header('auth-token', token).send(token)
             res.status(HttpStatusCode.OK).json({ token: token, user: [result.email, result.username, result.phoneNumber, result.address, result.image] })
             // res.status(HttpStatusCode.OK).json(result)
@@ -38,7 +38,7 @@ const getFullUser = async (req, res) => {
             if (!validPassword) {
                 res.status(HttpStatusCode.OK).json('incorrect password')
             } else {
-                const token = jwt.sign({ _id: result._id, role: 'Customer', email: result.email, username: result.username }, process.env.TOKEN_SECRET_CUSTOMER)
+                const token = jwt.sign({ _id: result._id, role: 'Customer', email: result.email }, process.env.TOKEN_SECRET_CUSTOMER)
                 // res.header('auth-token', token).send(token)
                 res.status(HttpStatusCode.OK).json({ token: token, user: [result.email, result.username, result.phoneNumber, result.address, result.image] })
             }
