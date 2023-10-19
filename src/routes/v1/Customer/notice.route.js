@@ -24,5 +24,6 @@ router.route('/')
 
 router.route('/fetch/:email')
     .get(authCustomer, noticeController.getFullNotice)
+    .put(authCustomer, noticeController.getUpdateNotice)
 
 export const noticeRoutes = router

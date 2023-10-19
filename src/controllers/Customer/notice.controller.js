@@ -26,7 +26,20 @@ const getFullNotice = async (req, res) => {
     }
 }
 
+const getUpdateNotice = async (req, res) => {
+    try {
+        const result = await noticeService.getUpdateNotice(req.params, req.body)
+        res.status(HttpStatusCode.OK).json(result)
+
+    } catch (error) {
+        res.status(HttpStatusCode.INTERNAL_SERVER).json({
+            error: error.message
+        })
+    }
+}
+
 export const noticeController = { 
     createNew,
-    getFullNotice
+    getFullNotice,
+    getUpdateNotice
 }

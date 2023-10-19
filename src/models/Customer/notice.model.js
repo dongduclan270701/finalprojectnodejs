@@ -60,9 +60,25 @@ const findOneById = async (id) => {
     }
 }
 
+const getUpdateNotice = async (email, id) => {
+    try {
+        const updateCart = await getDB().collection(noticeName).findOneAndUpdate(
+            {
+                _id: ObjectId(id),
+                email: email.email
+            },
+            { $set: { isReadCus: true } },
+            { returnDocument: 'after' }
+        )
+        return updateCart.value
+    } catch (error) {
+        throw new Error(error)
+    }
+}
 
 export const noticeModel = {
     createNew,
     findOneById,
-    getFullNotice
+    getFullNotice,
+    getUpdateNotice
 }
