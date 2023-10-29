@@ -15,7 +15,8 @@ const orderSchema = Joi.object({
     _destroy: Joi.boolean().default(false),
     orderId: Joi.string(),
     createDate: Joi.string(),
-    isRead: Joi.boolean().default(false)
+    isReadCus: Joi.boolean().default(false),
+    isReadAdmin: Joi.boolean().default(false)
 })
 
 const validateSchema = async (data) => {
