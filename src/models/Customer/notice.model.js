@@ -25,7 +25,6 @@ const validateSchema = async (data) => {
 
 const createNew = async (data) => {
     try {
-        console.log(data)
         const value = await validateSchema(data)
         const result = await getDB().collection(noticeName).insertOne(value)
         return result

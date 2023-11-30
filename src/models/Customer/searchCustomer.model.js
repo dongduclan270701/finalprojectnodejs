@@ -34,6 +34,7 @@ const getFilterGoods = async (data) => {
             const result = await getDB().collection(data.collection.toLowerCase().replace(/ /g, '')).aggregate([
                 {
                     $match: {
+                        nameProduct: { $regex: new RegExp(data.nameProduct, 'i') },
                         category: filteredCategory.length > 0 ? { $all: filteredCategory } : { $exists: true },
                         nowPrice: {
                             $gte: data.minPrice * 1,
@@ -46,6 +47,7 @@ const getFilterGoods = async (data) => {
             const resultTotal = await getDB().collection(data.collection.toLowerCase().replace(/ /g, '')).aggregate([
                 {
                     $match: {
+                        nameProduct: { $regex: new RegExp(data.nameProduct, 'i') },
                         category: filteredCategory.length > 0 ? { $all: filteredCategory } : { $exists: true },
                         nowPrice: {
                             $gte: data.minPrice * 1,
@@ -61,6 +63,7 @@ const getFilterGoods = async (data) => {
             const result = await getDB().collection(data.collection.toLowerCase().replace(/ /g, '')).aggregate([
                 {
                     $match: {
+                        nameProduct: { $regex: new RegExp(data.nameProduct, 'i') },
                         category: filteredCategory.length > 0 ? { $all: filteredCategory } : { $exists: true },
                         nowPrice: {
                             $gte: data.minPrice * 1,
@@ -76,6 +79,7 @@ const getFilterGoods = async (data) => {
             const resultTotal = await getDB().collection(data.collection.toLowerCase().replace(/ /g, '')).aggregate([
                 {
                     $match: {
+                        nameProduct: { $regex: new RegExp(data.nameProduct, 'i') },
                         category: filteredCategory.length > 0 ? { $all: filteredCategory } : { $exists: true },
                         nowPrice: {
                             $gte: data.minPrice * 1,

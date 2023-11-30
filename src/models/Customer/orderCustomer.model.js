@@ -132,7 +132,7 @@ const findUserAndUpdateOrderList = async (email, data) => {
             orderId: data.orderId,
             product: [
                 {
-                    img: data.product[0].img[0],
+                    img: data.product[0].img,
                     nameProduct: data.product[0].nameProduct,
                     src: data.product[0].src,
                     quantity: data.product[0].quantity,
