@@ -5,7 +5,6 @@ const createNew = async (req, res) => {
     try {
         const data = req.body
         const result = await orderCustomerService.createNew(data)
-        console.log(result)
         res.status(HttpStatusCode.OK).json(result)
     } catch (error) {
         res.status(HttpStatusCode.INTERNAL_SERVER).json({
