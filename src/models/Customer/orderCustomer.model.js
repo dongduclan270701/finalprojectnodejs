@@ -162,6 +162,38 @@ const update = async (id, data) => {
             ...data,
             updateAt: Date.now()
         }
+        const currentDate = new Date()
+        const currentDay = currentDate.getDate()
+        const currentMonth = currentDate.getMonth() + 1
+        for (const item of updateData.product) {
+            const updateProduct = await getDB().collection(item.collection).findOneAndUpdate(
+                { src: item.src },
+                { $inc: { sold: -item.quantity, quantity: +item.quantity } },
+                { returnDocument: 'after' }
+            )
+            const soldInMonthIndex = updateProduct.value.soldInMonth.findIndex(item => item.day === currentDay);
+            if (soldInMonthIndex !== -1) {
+                // Nếu ngày đã tồn tại, tăng giá trị sold tương ứng
+                if (currentDay === 1 && updateProduct.value.soldInMonth.length > 1) {
+                    updateProduct.value.soldInMonth = []
+                    updateProduct.value.soldInMonth.push({ day: currentDay, sold: item.quantity })
+                } else {
+                    updateProduct.value.soldInMonth[soldInMonthIndex].sold -= item.quantity;
+                }
+            }
+
+            // Tìm tháng hiện tại trong soldInYear
+            const soldInYearIndex = updateProduct.value.soldInYear.findIndex(item => item.month === currentMonth);
+            if (soldInYearIndex !== -1) {
+                // Nếu tháng đã tồn tại, tăng giá trị sold tương ứng
+                updateProduct.value.soldInYear[soldInYearIndex].sold -= item.quantity;
+            }
+            const updateNewProduct = await getDB().collection(item.collection).findOneAndUpdate(
+                { src: item.src },
+                { $set: updateProduct.value },
+                { returnDocument: 'after' }
+            )
+        }
         const { _id, ...newUpdateData } = updateData
         const updateOrder = await getDB().collection(orderName).findOneAndUpdate(
             { orderId: id },
