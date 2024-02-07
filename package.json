@@ -26,6 +26,7 @@
   "homepage": "https://github.com/dongduclan270701/trello-api#readme",
   "dependencies": {
     "@babel/runtime": "^7.17.9",
+    "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
