@@ -4,7 +4,7 @@ import { env } from '*/config/environment'
 import { apiV1 } from '*/routes/v1'
 const cors = require('cors')
 import { corsOptions } from '*/config/cors.js'
-
+const requestIp = require('request-ip')
 connectDB()
     .then(() => console.log('Connected MongoDB successfully to server'))
     .then(() => bootServer())
@@ -19,6 +19,7 @@ const bootServer = () => {
 
     // Enable req.body data
     app.use(express.json())
+    app.use(requestIp.mw())
 
     // Use APIs v1
     app.use('/v1', apiV1)
