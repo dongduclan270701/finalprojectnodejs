@@ -11,6 +11,7 @@ import { cartCustomerRoutes } from './Customer/cartCustomer.route'
 import { chatRoutes } from './Chat/Chat.route'
 import { noticeRoutes } from './Customer/notice.route'
 import { ipRoutes } from './Customer/ip.route'
+import { requestRoutes } from './Customer/request.route'
 const router = express.Router()
 
 // GET v1/status
@@ -40,5 +41,6 @@ router.use('/chat', chatRoutes)
 router.use('/notice', noticeRoutes)
 
 router.use('/ip', ipRoutes)
+router.use('/request', requestRoutes)
 
 export const apiV1 = router
